@@ -70,7 +70,7 @@ class Screen():
             self.cbb_genres['values'] = ('Rock', 'Rap', 'Indie', 'Pagode', 'Samba', 'MPB', 'Neo MPB', 'teste')
             self.cbb_genres.grid(column=1, row=2)
 
-            directive = f'INSERT INTO product {}'
+            # directive = f'INSERT INTO product {}'
             self.cbx_is_subgenre.grid(column=1, row=4)
             self.btn_insert_genre = tk.Button(product_toplv, text='Inserir', command=db.insert())
             self.btn_insert_genre.grid(column=1, row=4)
