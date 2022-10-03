@@ -3,7 +3,7 @@ from sqlite3 import Error
 
 
 def dbconnection():
-    path = "/base.db"
+    path = "base.db"
     connection = None
 
     try:
@@ -79,23 +79,20 @@ def search(sql_directive):
 
 # sql_update = 'UPDATE cliente2 SET nome="Rogerio" WHERE id=1;'
 
-# # sql_create_table = "CREATE TABLE cliente2 (id INTEGER PRIMARY KEY, nome VARCHAR(60) NOT NULL, cpf VARCHAR(11) NOT NULL);"
+# RELATED TO THE DATABASE STUFF
 
-# sql_insert1 = "INSERT INTO cliente2 VALUES(1, 'teste', '12345678911');"
-# sql_insert2 = "INSERT INTO cliente2 VALUES(2, 'teste', '12345678912');"
-# sql_insert3 = "INSERT INTO cliente2 VALUES(3, 'teste3, '12345678917');"
-# sql_insert5 = "INSERT INTO cliente2 VALUES(5, 'teste5', '12345678915');"
+# sql_create_table = "CREATE TABLE author (id INTEGER PRIMARY KEY, author_name VARCHAR(60));"
+# sql_create_table_genre = "CREATE TABLE genre (id INTEGER PRIMARY KEY, genre_name VARCHAR(60));"
+# sql_create_table_disk = "CREATE TABLE disk (id INTEGER PRIMARY KEY, author VARCHAR(60) NOT NULL, genre VARCHAR(20) NOT NULL, year INTEGER NOT NULL, FOREIGN KEY (author) REFERENCES author (author_name), FOREIGN KEY (author) REFERENCES disk (disk_name));"
 
-# sql_request = "SELECT * FROM cliente2"
+# create_table(sql_create_table)
+# create_table(sql_create_table_genre)
+# create_table(sql_create_table_disk)
 
-# # create_table(sql_create_table)
+# sql_create_table = "CREATE TABLE disk (id INTEGER PRIMARY KEY, author VARCHAR(60) NOT NULL, genre VARCHAR(20) NOT NULL);"
 
-# # insert(sql_insert1)
-# # insert(sql_insert2)
-# # insert(sql_insert5)
-# # insert(sql_insert3)
 
-# # update(sql_update)
+# update(sql_update)
 
 # # delete_from_table(sql_delete_table)
 

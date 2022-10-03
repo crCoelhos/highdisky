@@ -45,35 +45,85 @@ class Screen():
         self.frm_search = tk.Frame(self.frm_list_view)
         self.frm_search.place(relx=0, rely=0, relheight=0.15, relwidth=1)
 
-        def product_registration():
-            pass
-
         def product_in():
             pass
 
+        def genre_insertion():
+            genre_name = self.ent_insert_new_genre.get()
+            if genre_name == '':
+                messagebox.showwarning('Aviso', 'Necessario um nome e um genero principal!')
+            else:
+                sql_directive = f"INSERT INTO genre VALUES(NULL, '{genre_name}');"
+                db.insert(sql_directive)
+                # update_view()
+                messagebox.showinfo('Aviso', 'Gênero registrado com sucesso!')
+                self.ent_insert_disk_author.delete(0, 'end')
+                self.cbb_genres.delete(0, 'end')
+
+
         def genre_registration():
-            pass
+            new_genre_toplv = tk.Toplevel()
+            new_genre_toplv.geometry("250x250")
+            new_genre_toplv.title("Cadastrar gênero")
+
+            self.lbl_insert_new_genre = tk.Label(new_genre_toplv, text="Nome: ")
+            self.lbl_insert_new_genre.grid(column=0, row=0)
+            self.ent_insert_new_genre = tk.Entry(new_genre_toplv, width=25)
+            self.ent_insert_new_genre.grid(column=1, row=0)
+
+            self.btn_create_genre = tk.Button(new_genre_toplv, text='Inserir', command=genre_insertion)
+            self.btn_create_genre.grid(column=1, row=4, columnspan=2)
+
+
+        def product_registration():
+            author_name = self.ent_insert_disk_author.get()
+            year = self.ent_insert_disk_release_date.get()
+            genre = self.cbb_genres.get()
+            if author_name == '' and genre == '':
+                messagebox.showwarning('Aviso', 'Necessario um nome e um genero principal!')
+            else:
+                sql_directive = f"INSERT INTO disk VALUES(NULL, '{author_name}', '{genre}', '{year}');"
+                db.insert(sql_directive)
+                # update_view()
+                messagebox.showinfo('Aviso', 'Cliente inserido com sucesso!')
+                self.ent_insert_disk_author.delete(0, 'end')
+                self.cbb_genres.delete(0, 'end')
+                # self.tvw.insert('', tk.END, values=("Rogerio", "0001", "xxxx-57"))
+
+                print(f"INSERT INTO disk VALUES(NULL, '{author_name}', '{genre}', '{year}');")
 
         def product_create_product():
             product_toplv = tk.Toplevel()
             product_toplv.geometry("450x450")
             product_toplv.title("Criar Produto")
-            self.lbl_insert_disk_author = tk.Label(product_toplv, text="Autor: ")
+            selected_genre = tk.StringVar()
+
+            self.lbl_insert_disk_author = tk.Label(product_toplv, text="Nome: ")
+            self.lbl_insert_disk_author.grid(column=0, row=0)
+            self.ent_insert_disk_author = tk.Entry(product_toplv, width=25)
+            self.ent_insert_disk_author.grid(column=1, row=0)
+
+            self.lbl_insert_disk_author = tk.Label(product_toplv, text="Autor(es): ")
             self.lbl_insert_disk_author.grid(column=0, row=1)
             self.ent_insert_disk_author = tk.Entry(product_toplv, width=25)
             self.ent_insert_disk_author.grid(column=1, row=1)
 
             self.lbl_genre = tk.Label(product_toplv, text="Genero: ")
             self.lbl_genre.grid(column=0, row=2)
-            n = tk.StringVar()
-            self.cbb_genres = ttk.Combobox(product_toplv, width=25, textvariable=n)
-            self.cbb_genres['values'] = ('Rock', 'Rap', 'Indie', 'Pagode', 'Samba', 'MPB', 'Neo MPB', 'teste')
+            genre_list = db.search('SELECT DISTINCT genre_name FROM genre')
+            self.cbb_genres = ttk.Combobox(product_toplv, width=25, textvariable=selected_genre, values = [data for data, in genre_list])
+            self.cbb_genres.set('Rap')
             self.cbb_genres.grid(column=1, row=2)
 
+            self.lbl_insert_disk_release_date = tk.Label(product_toplv, text="Ano: ")
+            self.lbl_insert_disk_release_date.grid(column=0, row=3)
+            self.ent_insert_disk_release_date = tk.Entry(product_toplv, width=4)
+            self.ent_insert_disk_release_date.grid(column=1, row=3)
+
             # directive = f'INSERT INTO product {}'
-            self.cbx_is_subgenre.grid(column=1, row=4)
-            self.btn_insert_genre = tk.Button(product_toplv, text='Inserir', command=db.insert())
-            self.btn_insert_genre.grid(column=1, row=4)
+            self.btn_create_product = tk.Button(product_toplv, text='Inserir', command=product_registration)
+            self.btn_create_product.grid(column=1, row=4, columnspan=2)
+
 
 
         def product_edit_product():
@@ -115,7 +165,7 @@ class Screen():
         self.menu_bar.add_cascade(label="Produtos", menu=self.product_menu)
 
         self.genre_menu = Menu(self.menu_bar, tearoff=0)
-        self.genre_menu.add_command(label="Adicionar genero")
+        self.genre_menu.add_command(label="Adicionar genero", command=genre_registration)
         self.genre_menu.add_command(label="Editar genero")
         self.menu_bar.add_cascade(label="Generos", menu=self.genre_menu)
 
@@ -175,8 +225,10 @@ class Screen():
         self.ent_generic_search = tk.Entry(self.frm_search, width=15)
         self.ent_generic_search.grid(column=0, row=0)
 
-        self.cbb_genres = ttk.Combobox(self.frm_search, width=25, textvariable=n)
-        self.cbb_genres.grid(column=2, row=0)
+        to_search_selected_genre = tk.StringVar()
+        self.to_search_genre_list = db.search('SELECT DISTINCT genre_name FROM genre')
+        self.cbb_to_search_genres = ttk.Combobox(self.frm_search, width=25, textvariable=to_search_selected_genre, values=[data for data, in self.to_search_genre_list])
+        self.cbb_to_search_genres.grid(column=2, row=0)
 
         self.lbl_placeholder_DATEPICKER = tk.Label(self.frm_search, text="ANO", background='pink')
         self.lbl_placeholder_DATEPICKER.grid(column=3, row=0)
