@@ -68,7 +68,7 @@ def search(sql_directive):
         cursor = connection.cursor()
         cursor.execute(sql_directive)
         response = cursor.fetchall()
-        print('code: 205 - request found')
+        # print('code: 205 - request found')
         connection.close()
         return response
     except Error as err:
@@ -83,10 +83,11 @@ def search(sql_directive):
 
 # sql_create_table = "CREATE TABLE author (id INTEGER PRIMARY KEY, author_name VARCHAR(60));"
 # sql_create_table_genre = "CREATE TABLE genre (id INTEGER PRIMARY KEY, genre_name VARCHAR(60));"
-# sql_create_table_disk = "CREATE TABLE disk (id INTEGER PRIMARY KEY, author VARCHAR(60) NOT NULL, genre VARCHAR(20) NOT NULL, year INTEGER NOT NULL, FOREIGN KEY (author) REFERENCES author (author_name), FOREIGN KEY (author) REFERENCES disk (disk_name));"
+# sql_create_table_disk = "CREATE TABLE disk (id INTEGER PRIMARY KEY, disk_name VARCHAR(60) NOT NULL, fk_author INTEGER NOT NULL, fk_genre INTEGER NOT NULL, year INTEGER NOT NULL, FOREIGN KEY (fk_author) REFERENCES author (id), FOREIGN KEY (fk_genre) REFERENCES genre (id));"
 
 # create_table(sql_create_table)
 # create_table(sql_create_table_genre)
+# sql = "DROP TABLE disk"
 # create_table(sql_create_table_disk)
 
 # sql_create_table = "CREATE TABLE disk (id INTEGER PRIMARY KEY, author VARCHAR(60) NOT NULL, genre VARCHAR(20) NOT NULL);"
