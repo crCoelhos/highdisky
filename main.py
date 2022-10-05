@@ -66,15 +66,15 @@ class Screen():
 
         def author_insertion():
             author_name = self.ent_insert_new_author.get()
-            if author_name == '':
-                messagebox.showwarning('Aviso', 'Necessario um nome e um artista principal!')
-            else:
-                sql_directive = f"INSERT INTO author VALUES(NULL, '{author_name}');"
-                db.insert(sql_directive)               
-                messagebox.showinfo('Aviso', 'Artista cadastrado com sucesso!')
+            # if author_name == '':
+            #     messagebox.showwarning('Aviso', 'Necessario um nome e um artista principal!')
+            # else:
+            sql_directive = f"INSERT INTO author VALUES(NULL, '{author_name}');"
+            db.insert(sql_directive)               
+            # messagebox.showinfo('Aviso', 'Artista cadastrado com sucesso!')
 
-                self.new_author_toplv.destroy()
-                self.new_author_toplv.deiconify()
+            # self.new_author_toplv.destroy()
+            self.new_author_toplv.deiconify()
             
 
 
