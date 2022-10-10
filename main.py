@@ -236,6 +236,7 @@ class Screen():
             db.update(sql_directive)
             db.update(change_directive)
             messagebox.showinfo("Quantidade inserida", "Disco adicionado ao estoque!")
+            income_update_view()
             self.product_toplv.destroy()
 
         def confirm_sell_product():
@@ -265,12 +266,15 @@ class Screen():
                 db.update(sql_directive)
                 db.update(change_directive)
                 messagebox.showinfo("Venda", "Venda realizada com sucesso!")
+                sales_update_view()
                 self.product_toplv.destroy()
+
 
             elif quantity == 0:
                 db.update(sql_directive)
                 db.update(change_directive)
                 messagebox.showinfo("Venda", "Venda realizada com sucesso! \n Quantidade em estoque: 0, necessario reposição;")
+                sales_update_view()
                 self.product_toplv.destroy()
 
             else:
