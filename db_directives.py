@@ -68,39 +68,32 @@ def search(sql_directive):
         cursor = connection.cursor()
         cursor.execute(sql_directive)
         response = cursor.fetchall()
-        # print('code: 205 - request found')
+        print('code: 205 - request accepted')
         connection.close()
         return response
     except Error as err:
         print("no response")
         print(err)
 
-    # sql_delete_table = "DELETE FROM cliente2 WHERE id != 4;"
 
-# sql_update = 'UPDATE cliente2 SET nome="Rogerio" WHERE id=1;'
 
-# RELATED TO THE DATABASE STUFF
+# DATABASE STUFF
 
 sql_create_table = "CREATE TABLE IF NOT EXISTS author (id INTEGER PRIMARY KEY, author_name VARCHAR(60));"
 sql_create_table_genre = "CREATE TABLE IF NOT EXISTS genre (id INTEGER PRIMARY KEY, genre_name VARCHAR(60));"
-sql_create_table_disk = "CREATE TABLE IF NOT EXISTS disk (id INTEGER PRIMARY KEY, disk_name VARCHAR(60) NOT NULL, quantity INTEGER, fk_author INTEGER NOT NULL, fk_genre INTEGER NOT NULL, year INTEGER NOT NULL, FOREIGN KEY (fk_author) REFERENCES author (id), FOREIGN KEY (fk_genre) REFERENCES genre (id));"
+sql_create_table_disk = "CREATE TABLE IF NOT EXISTS disk (id INTEGER PRIMARY KEY, disk_name VARCHAR(60) NOT NULL, quantity INTEGER, price DECIMAL(10,2),fk_author INTEGER NOT NULL, fk_genre INTEGER NOT NULL, year INTEGER NOT NULL, FOREIGN KEY (fk_author) REFERENCES author (id), FOREIGN KEY (fk_genre) REFERENCES genre (id));"
 # sql_create_table_disk = "CREATE TABLE IF NOT EXISTS disk (id INTEGER PRIMARY KEY, disk_name VARCHAR(60) NOT NULL, fk_author INTEGER NOT NULL, fk_genre INTEGER NOT NULL, year INTEGER NOT NULL, FOREIGN KEY (fk_author) REFERENCES author (id), FOREIGN KEY (fk_genre) REFERENCES genre (id));"
 sql_create_table_inventory = "CREATE TABLE IF NOT EXISTS inventory(id INTEGER PRIMARY KEY, quantity INTEGER, fk_disk INTEGER, FOREIGN KEY (fk_disk) REFERENCES disk (id))"
-sql_create_table_sales = "CREATE TABLE IF NOT EXISTS sales(id INTEGER PRIMARY KEY, quantity INTEGER, sale_date DATE, fk_disk INTEGER, FOREIGN KEY (fk_disk) REFERENCES disk (id))"
-sql_create_table_history = "CREATE TABLE IF NOT EXISTS changes(id INTEGER PRIMARY KEY, stamp VARCHAR(255), type VARCHAR(10), date DATE, fk_disk INTEGER, FOREIGN KEY (fk_disk) REFERENCES disk (id))"
+# sql_create_table_sales = "CREATE TABLE IF NOT EXISTS sales(id INTEGER PRIMARY KEY, quantity INTEGER, total_price DECIMAL(10,2), sale_date DATE, fk_disk INTEGER, FOREIGN KEY (fk_disk) REFERENCES disk (id))"
+sql_create_table_history = "CREATE TABLE IF NOT EXISTS changes(id INTEGER PRIMARY KEY, stamp VARCHAR(255), type VARCHAR(10), date DATE, quantity INTEGER, total_price DECIMAL(10,2) ,fk_disk INTEGER, FOREIGN KEY (fk_disk) REFERENCES disk (id))"
 create_table(sql_create_table)
 create_table(sql_create_table_genre)
 # sql = "DROP TABLE disk"
 create_table(sql_create_table_disk)
 create_table(sql_create_table_inventory)
-create_table(sql_create_table_sales)
+# create_table(sql_create_table_sales)
 create_table(sql_create_table_history)
-# sql_create_table = "CREATE TABLE disk (id INTEGER PRIMARY KEY, author VARCHAR(60) NOT NULL, genre VARCHAR(20) NOT NULL);"
 
-
-# update(sql_update)
-
-# # delete_from_table(sql_delete_table)
 
 # for s in search(sql_request):
 #     print(s)
