@@ -15,13 +15,12 @@ import db_directives as db
 # log simplificado
 # relações importantes
 # exibição do historico
-
+# valores dos discos
+# insert on tvw das vendas e compras
 
 # TO DO
 
 # todas as telas de edits
-# valores dos discos
-# insert on tvw das vendas e compras
 # busca na tvw de disk_list
 
 class Screen():
