@@ -81,17 +81,14 @@ def search(sql_directive):
 
 sql_create_table = "CREATE TABLE IF NOT EXISTS author (id INTEGER PRIMARY KEY, author_name VARCHAR(60));"
 sql_create_table_genre = "CREATE TABLE IF NOT EXISTS genre (id INTEGER PRIMARY KEY, genre_name VARCHAR(60));"
-sql_create_table_disk = "CREATE TABLE IF NOT EXISTS disk (id INTEGER PRIMARY KEY, disk_name VARCHAR(60) NOT NULL, quantity INTEGER, price DECIMAL(10,2),fk_author INTEGER NOT NULL, fk_genre INTEGER NOT NULL, year INTEGER NOT NULL, FOREIGN KEY (fk_author) REFERENCES author (id), FOREIGN KEY (fk_genre) REFERENCES genre (id));"
+sql_create_table_disk = "CREATE TABLE IF NOT EXISTS disk (id INTEGER PRIMARY KEY, disk_name VARCHAR(60) NOT NULL, quantity INTEGER,fk_author INTEGER NOT NULL, fk_genre INTEGER NOT NULL, year INTEGER NOT NULL, FOREIGN KEY (fk_author) REFERENCES author (id), FOREIGN KEY (fk_genre) REFERENCES genre (id));"
 # sql_create_table_disk = "CREATE TABLE IF NOT EXISTS disk (id INTEGER PRIMARY KEY, disk_name VARCHAR(60) NOT NULL, fk_author INTEGER NOT NULL, fk_genre INTEGER NOT NULL, year INTEGER NOT NULL, FOREIGN KEY (fk_author) REFERENCES author (id), FOREIGN KEY (fk_genre) REFERENCES genre (id));"
 sql_create_table_inventory = "CREATE TABLE IF NOT EXISTS inventory(id INTEGER PRIMARY KEY, quantity INTEGER, fk_disk INTEGER, FOREIGN KEY (fk_disk) REFERENCES disk (id))"
 # sql_create_table_sales = "CREATE TABLE IF NOT EXISTS sales(id INTEGER PRIMARY KEY, quantity INTEGER, total_price DECIMAL(10,2), sale_date DATE, fk_disk INTEGER, FOREIGN KEY (fk_disk) REFERENCES disk (id))"
-sql_create_table_history = "CREATE TABLE IF NOT EXISTS changes(id INTEGER PRIMARY KEY, stamp VARCHAR(255), type VARCHAR(10), date DATE, quantity INTEGER, total_price DECIMAL(10,2) ,fk_disk INTEGER, FOREIGN KEY (fk_disk) REFERENCES disk (id))"
+sql_create_table_history = "CREATE TABLE IF NOT EXISTS changes(id INTEGER PRIMARY KEY, stamp VARCHAR(255), type VARCHAR(10), date DATE, quantity INTEGER, fk_disk INTEGER, FOREIGN KEY (fk_disk) REFERENCES disk (id))"
 create_table(sql_create_table)
 create_table(sql_create_table_genre)
-# sql = "DROP TABLE disk"
 create_table(sql_create_table_disk)
-create_table(sql_create_table_inventory)
-# create_table(sql_create_table_sales)
 create_table(sql_create_table_history)
 
 
