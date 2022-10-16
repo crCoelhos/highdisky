@@ -50,7 +50,7 @@ def update(sql_directive):
         print(err)
 
 
-def delete_from_table(sql_directive):
+def delete(sql_directive):
     try:
         connection = dbconnection()
         cursor = connection.cursor()

@@ -1,3 +1,4 @@
+from email import message
 import imghdr
 import tkinter as tk
 from tkinter import ttk
@@ -7,22 +8,19 @@ from turtle import color
 import sqlite3
 from sqlite3 import Error, connect
 from datetime import date
+import webbrowser
 import db_directives as db
 
 #DONE
-# todos os cruds 
-# log simplificado
 # relações importantes
+# todos os cruds 
+# busca na tvw principal
+# log simplificado
 # exibição do historico
 
 
 # TO DO
 
-# decidir por ou não autenticação de usuario para registro/role
-# todas as telas de edits
-# valores dos discos
-# insert on tvw das vendas e compras
-# busca na tvw de disk_list
 
 class Screen():
     def __init__(self, master, selected_mont=None):
@@ -55,10 +53,48 @@ class Screen():
         self.frm_search = tk.Frame(self.frm_list_view)
         self.frm_search.place(relx=0, rely=0, relheight=0.15, relwidth=1)
 
-        def product_in():
-            pass
+        def about_dev():
+            self.info_toplv = tk.Toplevel()
+            self.info_toplv.geometry('550x300')
+            self.info_toplv.title("About me")
 
+            self.text_about_me = tk.Text(self.info_toplv, width= 60, height= 30)
+            self.text_about_me.insert(INSERT, "Crhistopher Ric Coelho Saar, 28yo, natural from Brazil.\nGraduating in IT at UFAC(Federal University of Acre).\nCurrently working with angular 13 and mainly with python(django 3.1)")
+            self.text_about_me.place(relx=0, rely=0)
+            self.text_about_me.configure(state='disabled')
+            
+            
+
+        def reach_me():
+            def path(url):
+                webbrowser.open_new(url)
+            self.info_toplv = tk.Toplevel()
+            self.info_toplv.geometry('300x300')
+            self.info_toplv.title("Contact me")
+
+            self.lbl_explain = tk.Label(self.info_toplv, text="A few links and ways to contact me:")
+            self.lbl_explain.place(rely=0, relx=0)
+
+            self.lbl_cont1 = tk.Label(self.info_toplv, text='Email: ')
+            self.lbl_cont1.place(rely=0.1, relx=0.05)
+
+            self.lbl_contact1 = tk.Label(self.info_toplv, text='cristophersaar@gmail.com', fg='#0000EE')
+            self.lbl_contact1.place(rely=0.1, relx=0.21)
+            self.lbl_contact1.bind("<Button-1>", lambda e: path("http://mailto:cristophersaar@gmail.com"))
+
+            self.lbl_cont2 = tk.Label(self.info_toplv, text='phone: ')
+            self.lbl_cont2.place(rely=0.2, relx=0.05)
+            self.lbl_contact2 = tk.Label(self.info_toplv, text='+55 68 999310080', fg='#0000EE')
+            self.lbl_contact2.place(rely=0.2, relx=0.21)
+            self.lbl_contact2.bind("<Button-1>", lambda e: path("https://wa.me/5568999310080"))
         
+            self.lbl_cont3 = tk.Label(self.info_toplv, text='Github: ')
+            self.lbl_cont3.place(rely=0.3, relx=0.05)
+            self.lbl_contact3 = tk.Label(self.info_toplv, text="cCoelhos", fg='#0000EE')
+            self.lbl_contact3.place(rely=0.3, relx=0.21)
+            self.lbl_contact3.bind("<Button-1>", lambda e: path("https://github.com/crcoelhos"))
+
+
 
         def genre_insertion():
             genre_name = self.ent_insert_new_genre.get()
@@ -98,8 +134,67 @@ class Screen():
             self.ent_insert_new_genre.grid(column=1, row=0)
 
             self.btn_create_genre = tk.Button(self.new_genre_toplv, text='Inserir', command=genre_insertion)
-            self.btn_create_genre.grid(column=1, row=4, columnspan=2)
+            self.btn_create_genre.grid(column=1, row=4)
+
         
+        def remove_genre():
+            current_name = self.cbb_genres_to_update.get()
+            if current_name:
+                validacao = messagebox.askyesno(title='Excluir?', message='Tem certeza que deseja remover?')
+                if validacao:
+                    sql_directive = f'DELETE FROM genre WHERE genre_name="{current_name}";'
+                    db.delete(sql_directive)
+                    messagebox.showinfo('Aviso', 'Genero removido com sucesso!')
+                    self.genre_update_toplv.destroy()
+                else:
+                    self.genre_update_toplv.deiconify()
+
+
+            else:
+                messagebox.showerror("Aviso", "Necessario selecionar algum item para exclusão")
+                self.genre_update_toplv.deiconify()
+        
+        def genre_update():
+            self.genre_update_toplv = tk.Toplevel()
+            self.genre_update_toplv.geometry("250x250")
+            self.genre_update_toplv.title("Atualizar genero")
+            
+            selected_genre = tk.StringVar()
+            self.lbl_insert_genre = tk.Label(self.genre_update_toplv, text="Genero: ")
+            self.lbl_insert_genre.grid(column=0, row=0)
+            genre_list = db.search('SELECT DISTINCT genre_name FROM genre')
+            self.cbb_genres_to_update = ttk.Combobox(self.genre_update_toplv, width=25, textvariable=selected_genre, state="readonly" ,values = [data_genre for data_genre, in genre_list])            
+            self.cbb_genres_to_update.grid(column=1, row=0)
+
+            self.lbl_new_name = tk.Label(self.genre_update_toplv, text="Novo nome")
+            self.lbl_new_name.grid(column=0, row=1)
+
+            self.ent_new_genre_name = tk.Entry(self.genre_update_toplv, width=28)
+            self.ent_new_genre_name.grid(column=1, row=1)
+
+            self.btn_new_name = tk.Button(self.genre_update_toplv, text="Atualizar", command=confirm_new_genre_name)
+            self.btn_new_name.grid(column=1, row=2)
+
+            
+            self.btn_remove_genre = tk.Button(self.genre_update_toplv, text='Remover', command=remove_genre)
+            self.btn_remove_genre.grid(column=1, row=3)
+        
+        def confirm_new_genre_name():
+            new_name = self.ent_new_genre_name.get()
+            current_name = self.cbb_genres_to_update.get()
+            sql_directive = f'UPDATE genre SET genre_name="{new_name}" WHERE genre_name="{current_name}";'
+            if new_name:
+                db.update(sql_directive)
+                messagebox.showinfo('Aviso', 'Genero atualizado com sucesso!')
+                self.genre_update_toplv.destroy()
+            else:
+                messagebox.showwarning('Aviso', 'Nome invalido, refaça a operação!')
+                self.genre_update_toplv.destroy()
+
+
+
+            
+
         def author_registration():
             self.new_author_toplv = tk.Toplevel()
             self.new_author_toplv.geometry("250x250")
@@ -112,7 +207,68 @@ class Screen():
 
             self.btn_create_author = tk.Button(self.new_author_toplv, text='Inserir', command=author_insertion)
             self.btn_create_author.grid(column=1, row=4, columnspan=2)
+        
+        
+        def author_update():
+            selected_author = tk.StringVar()
+            self.author_update_toplv = tk.Toplevel()
+            self.author_update_toplv.geometry("250x250")
+            self.author_update_toplv.title("Atualizar autor")
 
+            self.lbl_insert_disk_author_to_update = tk.Label(self.author_update_toplv, text="Autor: ")
+            self.lbl_insert_disk_author_to_update.grid(column=0, row=0)
+            author_list = db.search('SELECT DISTINCT author_name FROM author')
+            self.cbb_authors_to_update = ttk.Combobox(self.author_update_toplv, 
+                                                width=25, 
+                                                textvariable=selected_author, 
+                                                state="readonly",
+                                                values = [data_author for data_author, in author_list])
+            self.cbb_authors_to_update.grid(column=1, row=0)
+
+            self.lbl_new_name = tk.Label(self.author_update_toplv, text="Novo nome")
+            self.lbl_new_name.grid(column=0, row=1)
+
+            self.ent_new_name = tk.Entry(self.author_update_toplv, width=28)
+            self.ent_new_name.grid(column=1, row=1)
+
+            self.btn_new_name = tk.Button(self.author_update_toplv, text="Atualizar", command=confirm_new_author_name)
+            self.btn_new_name.grid(column=1, row=2)
+           
+            self.btn_delete_author = tk.Button(self.author_update_toplv, text="Remover", command=remove_author)
+            self.btn_delete_author.grid(column=1, row=3)
+
+
+        def remove_author():
+            current_name = self.cbb_authors_to_update.get()
+            if current_name:
+                validacao = messagebox.askyesno(title='Excluir?', message='Tem certeza que deseja remover?')
+                if validacao:
+                    sql_directive = f'DELETE FROM author WHERE author_name="{current_name}";'
+                    db.delete(sql_directive)
+                    messagebox.showinfo('Aviso', 'Autor removido com sucesso!')
+                    self.author_update_toplv.destroy()
+                else:
+                    self.author_update_toplv.deiconify()
+
+
+            else:
+                messagebox.showerror("Aviso", "Necessario selecionar algum item para exclusão")
+                self.author_update_toplv.deiconify()
+
+
+        def confirm_new_author_name():
+            new_name = self.ent_new_name.get()
+            current_name = self.cbb_authors_to_update.get()
+            sql_directive = f'UPDATE author SET author_name="{new_name}" WHERE author_name="{current_name}";'
+            if new_name:
+                db.update(sql_directive)
+                messagebox.showinfo('Aviso', 'Autor atualizado com sucesso!')
+                self.author_update_toplv.destroy()
+            else:               
+                messagebox.showwarning('Aviso', 'Nome invalido, refaça a operação!')
+                self.author_update_toplv.destroy()
+
+        
 
         def product_registration():
             disk_name = self.ent_insert_disk_name.get()
@@ -132,7 +288,14 @@ class Screen():
             if author_id == '' and genre_id == '':
                 messagebox.showwarning('Aviso', 'Necessario um nome e um genero principal!')
             else:
-                sql_directive = f"INSERT INTO disk VALUES(NULL,'{disk_name}', 0, '{right_author_id}', '{right_genre_id}', '{year}');"
+                sql_directive = f"""INSERT INTO disk 
+                                    VALUES(
+                                        NULL,
+                                        '{disk_name}',
+                                        0, 
+                                        '{right_author_id}', 
+                                        '{right_genre_id}', 
+                                        '{year}');"""
                 db.insert(sql_directive)
                 update_view()
                 
@@ -143,14 +306,14 @@ class Screen():
 
         def product_create_product():
             self.product_toplv = tk.Toplevel()
-            self.product_toplv.geometry("450x450")
+            self.product_toplv.geometry("250x250")
             self.product_toplv.title("Criar Produto")
             selected_genre = tk.StringVar()
             selected_author = tk.StringVar()
 
             self.lbl_insert_disk_name = tk.Label(self.product_toplv, text="Nome: ")
             self.lbl_insert_disk_name.grid(column=0, row=0)
-            self.ent_insert_disk_name = tk.Entry(self.product_toplv, width=25)
+            self.ent_insert_disk_name = tk.Entry(self.product_toplv, width=28)
             self.ent_insert_disk_name.grid(column=1, row=0)
 
             self.lbl_insert_disk_author = tk.Label(self.product_toplv, text="Autor: ")
@@ -175,11 +338,61 @@ class Screen():
             self.btn_create_product.grid(column=1, row=4, columnspan=2)
 
 
+        def remove_product():
+            current_name = self.cbb_products_to_update.get()
+            if current_name:
+                validacao = messagebox.askyesno(title='Excluir?', message='Tem certeza que deseja remover?')
+                if validacao:
+                    sql_directive = f'DELETE FROM disk WHERE disk_name="{current_name}";'
+                    db.delete(sql_directive)
+                    messagebox.showinfo('Aviso', 'Disco removido com sucesso!')
+                    update_view()
+                    self.edit_product_toplv.destroy()
+                else:
+                    self.edit_product_toplv.deiconify()
+
 
         def product_edit_product():
-            self.product_toplv = tk.Toplevel()
-            self.product_toplv.geometry("450x450")
-            self.product_toplv.title("Criar Produto")
+            self.edit_product_toplv = tk.Toplevel()
+            self.edit_product_toplv.geometry("250x250")
+            self.edit_product_toplv.title("Editar Produto")
+
+            selected_product = tk.StringVar()
+
+            self.lbl_get_product_to_update = tk.Label(self.edit_product_toplv, text="Disco: ")
+            self.lbl_get_product_to_update.grid(column=0, row=0)
+            disk_list = db.search('SELECT DISTINCT disk_name FROM disk')
+            self.cbb_products_to_update = ttk.Combobox(self.edit_product_toplv, 
+                                                width=25, 
+                                                textvariable=selected_product, 
+                                                state="readonly",
+                                                values = [data_disk for data_disk, in disk_list])
+            self.cbb_products_to_update.grid(column=1, row=0)
+
+            self.lbl_new_product_name = tk.Label(self.edit_product_toplv, text="Novo nome")
+            self.lbl_new_product_name.grid(column=0, row=1)
+
+            self.ent_new_product_name = tk.Entry(self.edit_product_toplv, width=28)
+            self.ent_new_product_name.grid(column=1, row=1)
+
+            self.btn_new_name = tk.Button(self.edit_product_toplv, text="Atualizar", command=confirm_new_disk_name)
+            self.btn_new_name.grid(column=1, row=2)
+
+            self.btn_remove_product = tk.Button(self.edit_product_toplv, text="Remover", command=remove_product)
+            self.btn_remove_product.grid(column=1, row=3)
+
+        def confirm_new_disk_name():
+            new_name = self.ent_new_product_name.get()
+            current_name = self.cbb_products_to_update.get()
+            sql_directive = f'UPDATE disk SET disk_name="{new_name}" WHERE disk_name="{current_name}";'
+            if new_name:
+                db.update(sql_directive)
+                messagebox.showinfo('Aviso', 'Disco atualizado com sucesso!')
+                self.edit_product_toplv.destroy()
+                update_view()
+            else:               
+                messagebox.showwarning('Aviso', 'Nome invalido, refaça a operação!')
+                self.edit_product_toplv.destroy()
 
         def product_add_product():
             self.product_toplv = tk.Toplevel()
@@ -225,9 +438,13 @@ class Screen():
         def confirm_add_product():
             income = int(self.ent_quantity.get())
             disk_name = self.cbb_disks.get()   
-            old_quantity = db.search(f'SELECT quantity FROM disk WHERE disk_name="{disk_name}";')
+            old_quantity = db.search(f'''SELECT quantity 
+                                        FROM disk 
+                                        WHERE disk_name="{disk_name}";''')
             right_old_quantity = int(''.join(map(str, (old_quantity[0]))))
-            disk_reference = db.search(f'SELECT id FROM disk WHERE  disk_name="{disk_name}";')
+            disk_reference = db.search(f'''SELECT id 
+                                            FROM disk 
+                                            WHERE  disk_name="{disk_name}";''')
        
             parsed_disk_Reference = int(''.join(map(str, (disk_reference[0]))))
 
@@ -262,7 +479,14 @@ class Screen():
             today = date.today()
             parsed_date = today.strftime(f"%d/%m/%Y")
             sql_directive = f'UPDATE disk SET quantity={quantity} WHERE disk_name="{disk_name}";' 
-            change_directive = f'INSERT INTO changes VALUES(NULL, "{sell_quantity} UNIDADES VENDIDAS", "venda", "{parsed_date}", {parsed_disk_Reference});'
+            change_directive = f'''INSERT INTO changes 
+                                    VALUES(
+                                        NULL, 
+                                        "{sell_quantity} UNIDADES VENDIDAS", 
+                                        "venda", 
+                                        "{parsed_date}", 
+                                        {parsed_disk_Reference}
+                                        );'''
             
 
             print('tipo',type(quantity))
@@ -280,10 +504,69 @@ class Screen():
                 self.product_toplv.destroy()
 
             else:
-                failed_sale_record = f'INSERT INTO changes VALUES(NULL, "VENDA NÃO EFETUADA POR INSUFICIENCIA NO ESTOQUE", "falha", "{parsed_date}", {parsed_disk_Reference});'
+                failed_sale_record = f'''INSERT INTO changes 
+                                         VALUES(
+                                            NULL, 
+                                            "VENDA NÃO EFETUADA POR INSUFICIENCIA NO ESTOQUE", 
+                                            "falha", 
+                                            "{parsed_date}", 
+                                            {parsed_disk_Reference}
+                                            );'''
                 db.update(failed_sale_record)
                 messagebox.showwarning("Aviso", "Quantidade solicitada indisponivel no estoque!" )
 
+
+
+        def tvw_search():
+            self.tvw_disk_list.selection()
+            fetchdata = self.tvw_disk_list.get_children()
+            for f in fetchdata:
+                self.tvw_disk_list.delete(f)
+        
+            name = self.ent_generic_search.get()
+            genre = self.cbb_to_search_genres.get()
+        
+            if name:
+                if genre:
+                    sql = f"""SELECT DISTINCT disk.id, disk_name, author_name, genre_name, year 
+                            FROM disk, genre, author 
+                            WHERE fk_author = author.id AND fk_genre = genre.id AND disk_name LIKE '%{name}%' AND genre_name LIKE '%{genre}%' """
+                    data = db.search(sql)
+                    for d in data:
+                        self.tvw_disk_list.insert("", END, values=d)
+                else:
+                    sql = f"""SELECT DISTINCT disk.id, disk_name, author_name, genre_name, year 
+                                FROM disk, genre, author 
+                                WHERE fk_author = author.id AND fk_genre = genre.id AND disk_name LIKE '%{name}%' """
+                    data = db.search(sql)
+                    for d in data:
+                        self.tvw_disk_list.insert("", END, values=d)
+            elif genre:
+                if name:
+                    sql = f"""SELECT DISTINCT disk.id, disk_name, author_name, genre_name, year 
+                            FROM disk, genre, author 
+                            WHERE fk_author = author.id AND fk_genre = genre.id AND disk_name LIKE '%{name}%' AND genre_name LIKE '%{genre}%' """
+                    data = db.search(sql)
+                    for d in data:
+                        self.tvw_disk_list.insert("", END, values=d)
+                else:
+                    sql = f"""SELECT DISTINCT disk.id, disk_name, author_name, genre_name, year 
+                                FROM disk, genre, author 
+                                WHERE fk_author = author.id AND fk_genre = genre.id AND genre_name LIKE '%{genre}%' """
+                    data = db.search(sql)
+                    for d in data:
+                        self.tvw_disk_list.insert("", END, values=d)
+                
+            else:
+                update_view()
+        
+        def tvw_search_filter_reset():
+            self.cbb_to_search_genres.set('')
+            self.ent_generic_search.delete(0, END)
+            update_view()
+            
+
+            
         #menu
 
         self.menu_bar = Menu(self.window)
@@ -300,23 +583,19 @@ class Screen():
 
         self.genre_menu = Menu(self.menu_bar, tearoff=0)
         self.genre_menu.add_command(label="Adicionar genero", command=genre_registration)
-        self.genre_menu.add_command(label="Editar genero")
+        self.genre_menu.add_command(label="Editar genero", command=genre_update)
         self.menu_bar.add_cascade(label="Generos", menu=self.genre_menu)
 
         self.author_menu = Menu(self.menu_bar, tearoff=0)
         self.author_menu.add_command(label="Adicionar autor", command=author_registration)
-        self.author_menu.add_command(label="Editar autor")
+        self.author_menu.add_command(label="Editar autor", command=author_update)
         self.menu_bar.add_cascade(label="Autor", menu=self.author_menu)
 
         self.user_menu = Menu(self.menu_bar, tearoff=0)
-        self.user_menu.add_command(label="Criar usuario")
-        self.user_menu.add_command(label="Editar usuario")
-        self.user_menu.add_command(label="Remover usuario")
-        self.user_menu.add_command(label="Logout")
-        self.menu_bar.add_cascade(label="Usuarios", menu=self.user_menu)
+        self.user_menu.add_command(label="Sobre", command=about_dev)
+        self.user_menu.add_command(label="Contato", command=reach_me)
+        self.menu_bar.add_cascade(label="Info", menu=self.user_menu)
 
-        self.preferences_menu = Menu(self.menu_bar, tearoff=0)
-        self.menu_bar.add_cascade(label="Preferencias", menu=self.preferences_menu)
 
 
 
@@ -353,8 +632,17 @@ class Screen():
         self.cbb_to_search_genres = ttk.Combobox(self.frm_search, width=25, textvariable=to_search_selected_genre, values=[data for data, in self.to_search_genre_list])
         self.cbb_to_search_genres.grid(column=2, row=0)
 
-        # self.lbl_placeholder_DATEPICKER = tk.Label(self.frm_search, text="ANO", background='pink')
-        # self.lbl_placeholder_DATEPICKER.grid(column=3, row=0)
+        self.btn_search_on_tvw = tk.Button(self.frm_search, text="Procurar", command=tvw_search)
+        self.btn_search_on_tvw.grid(column=3, row=0)
+
+        self.gambiarra = tk.Label(self.frm_search)
+        self.gambiarra.grid(column=4, row=0)
+        self.gambiarra2 = tk.Label(self.frm_search)
+        self.gambiarra2.grid(column=5, row=0)
+
+       
+        self.btn_search_on_tvw = tk.Button(self.frm_search, text="Atualizar", command=tvw_search_filter_reset)
+        self.btn_search_on_tvw.grid(column=6, row=0)
 
         # frm_list_view content
 
@@ -399,7 +687,7 @@ class Screen():
         self.tvw_resource_income.place(relx=0.1, rely=0.1, relwidth=0.45, relheight=0.45)
 
         self.tvw_resource_income.heading("DISCO", text="Disco")
-        self.tvw_resource_income.heading("QUANTIA", text="Quantia")
+        self.tvw_resource_income.heading("QUANTIA", text="Quantidade")
 
         self.tvw_resource_income.column("DISCO",  minwidth=0, width=1)
         self.tvw_resource_income.column("QUANTIA", minwidth=20, width=20)
@@ -424,7 +712,7 @@ class Screen():
         self.tvw_last_sales.place(relx=0.1, rely=0.61, relwidth=0.45, relheight=0.45)
 
         self.tvw_last_sales.heading("DISCO", text="Disco")
-        self.tvw_last_sales.heading("QUANTIA", text="Quantia")
+        self.tvw_last_sales.heading("QUANTIA", text="Quantidade")
 
         self.tvw_last_sales.column("DISCO",  minwidth=0, width=2)
         self.tvw_last_sales.column("QUANTIA", minwidth=0, width=20)
