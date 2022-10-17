@@ -675,10 +675,10 @@ class Screen():
             for i in self.tvw_resource_income.get_children():
                 self.tvw_resource_income.delete(i)
 
-            sql_directive = "SELECT DISTINCT disk_name, quantity FROM changes, disk WHERE fk_disk = disk.id AND changes.type ='compra'"
+            sql_directive = "SELECT DISTINCT disk_name, changes.quantity FROM changes, disk WHERE fk_disk = disk.id AND changes.type ='compra'"
             data = db.search(sql_directive)
-            for item in data:
-                self.tvw_resource_income.insert('', tk.END, values=item)
+            for data in data:
+                self.tvw_resource_income.insert('', tk.END, values=data)
             
         income_update_view()
 
@@ -700,7 +700,7 @@ class Screen():
             for i in self.tvw_last_sales.get_children():
                 self.tvw_last_sales.delete(i)
 
-            sql_directive = "SELECT DISTINCT disk_name, quantity FROM changes, disk WHERE fk_disk = disk.id AND changes.type ='venda'"
+            sql_directive = "SELECT DISTINCT disk_name, changes.quantity FROM changes, disk WHERE fk_disk = disk.id AND changes.type ='venda'"
             data = db.search(sql_directive)
             for item in data:
                 self.tvw_last_sales.insert('', tk.END, values=item)
