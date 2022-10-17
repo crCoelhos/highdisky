@@ -455,7 +455,7 @@ class Screen():
             quantity = right_old_quantity+income
 
             sql_directive = f'UPDATE disk SET quantity={quantity} WHERE disk_name="{disk_name}";'
-            change_directive = f'INSERT INTO changes VALUES(NULL, "{income} UNIDADES ADICIONADAS", "compra", "{parsed_date}",{quantity},{parsed_disk_Reference});'
+            change_directive = f'INSERT INTO changes VALUES(NULL, "{income} UNIDADES ADICIONADAS", "compra", "{parsed_date}",{income},{parsed_disk_Reference});'
             db.update(sql_directive)
             db.update(change_directive)
             messagebox.showinfo("Quantidade inserida", "Disco adicionado ao estoque!")
@@ -479,7 +479,7 @@ class Screen():
             today = date.today()
             parsed_date = today.strftime(f"%d/%m/%Y")
             sql_directive = f'UPDATE disk SET quantity={quantity} WHERE disk_name="{disk_name}";' 
-            change_directive = f'INSERT INTO changes VALUES(NULL, "{sell_quantity} UNIDADES VENDIDAS", "venda", "{parsed_date}",{quantity}, {parsed_disk_Reference});'
+            change_directive = f'INSERT INTO changes VALUES(NULL, "{sell_quantity} UNIDADES VENDIDAS", "venda", "{parsed_date}",{sell_quantity}, {parsed_disk_Reference});'
             
             if (quantity>0):
                 
@@ -704,6 +704,7 @@ class Screen():
             data = db.search(sql_directive)
             for item in data:
                 self.tvw_last_sales.insert('', tk.END, values=item)
+        
             
         sales_update_view()
 
